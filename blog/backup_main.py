@@ -1,13 +1,15 @@
 from flask import Flask, render_template, request,redirect
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
-import os
+import flask_login
 
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///C:/trably/blog/blog.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite3:///BLOG.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
+
+#login_manager = LoginManager()
 
 class Database(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -30,28 +32,18 @@ def about():
 @app.route('/pinguin')
 def pinguin():
     return render_template("pinguin.html")
-    
-@app.route('/feed')
-def feed():
-    posts = Database.query.order_by(Database.date.desc()).all()
-    return render_template("feed.html", posts = posts)
-
-@app.route('/feed/id=<int:id>')
-def post_on_feed(id):
-    post = Database.query.get(id)
-    return render_template("full_post.html", post = post)
 
 @app.route('/create-article',methods=['POST','GET'])
 def create_article():
     if request.method == "POST":
         title = request.form['title']
-        intro = request.form['intro']
-        text = request.form['text']
-        article = Database(title = title, intro=intro, text=text)
+        #intro = request.form['intro']
+        #text = request.form['text']
+        article = Database(title = title)
         try:
             db.session.add(article)
             db.session.commit()
-            return redirect('/feed')
+            return redirect('/')
         except Exception as e:
             return "АШЫБКА "+ e.__class__
     else:
@@ -60,3 +52,5 @@ def create_article():
 
 if __name__ == "__main__":
     app.run(debug=True)
+
+#

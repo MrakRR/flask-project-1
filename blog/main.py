@@ -30,16 +30,6 @@ def about():
 @app.route('/pinguin')
 def pinguin():
     return render_template("pinguin.html")
-    
-@app.route('/feed')
-def feed():
-    posts = Database.query.order_by(Database.date.desc()).all()
-    return render_template("feed.html", posts = posts)
-
-@app.route('/feed/id=<int:id>')
-def post_on_feed(id):
-    post = Database.query.get(id)
-    return render_template("full_post.html", post = post)
 
 @app.route('/create-article',methods=['POST','GET'])
 def create_article():
@@ -51,7 +41,7 @@ def create_article():
         try:
             db.session.add(article)
             db.session.commit()
-            return redirect('/feed')
+            return redirect('/')
         except Exception as e:
             return "АШЫБКА "+ e.__class__
     else:
